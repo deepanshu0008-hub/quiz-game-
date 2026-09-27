@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaun Banega Genius - 500+ Questions</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#101827,#263b5c);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.game{
+    width:100%;
+    max-width:800px;
+    background:rgba(255,255,255,0.10);
+    border:1px solid rgba(255,255,255,0.15);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+h1{
+    text-align:center;
+    font-size:35px;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    text-align:center;
+    opacity:.8;
+    margin-bottom:25px;
+}
+
+.center{
+    text-align:center;
+}
+
+.emoji{
+    font-size:70px;
+    margin-bottom:10px;
+}
+
+.startBtn,
+.restartBtn{
+    margin-top:25px;
+    padding:15px 35px;
+    border:none;
+    border-radius:30px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    background:white;
+    color:#17243a;
+    transition:.2s;
+}
+
+.startBtn:hover,
+.restartBtn:hover{
+    transform:scale(1.05);
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+.timerBox{
+    padding:10px 18px;
+    border-radius:30px;
+    background:rgba(255,255,255,.12);
+}
+
+.timer{
+    font-size:20px;
+}
+
+.progress{
+    width:100%;
+    height:8px;
+    background:rgba(255,255,255,.15);
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:20px;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:white;
+    transition:.3s;
+}
+
+.category{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:20px;
+    background:rgba(255,255,255,.12);
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.question{
+    font-size:23px;
+    line-height:1.5;
+    font-weight:bold;
+    background:rgba(255,255,255,.09);
+    padding:22px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.option{
+    padding:17px;
+    border-radius:15px;
+    border:2px solid rgba(255,255,255,.20);
+    background:rgba(255,255,255,.08);
+    color:white;
+    font-size:17px;
+    text-align:left;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover{
+    background:rgba(255,255,255,.18);
+    transform:translateY(-2px);
+}
+
+.option.correct{
+    background:#16803a;
+    border-color:#62ff91;
+}
+
+.option.wrong{
+    background:#a51d30;
+    border-color:#ff6575;
+}
+
+.option.disabled{
+    pointer-events:none;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    margin-top:22px;
+    font-weight:bold;
+}
+
+.resultScore{
+    font-size:60px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.hidden{
+    display:none;
+}
+
+.stats{
+    margin-top:20px;
+    line-height:2;
+}
+
+@media(max-width:600px){
+    .game{
+        padding:18px;
+    }
+
+    h1{
+        font-size:28px;
+    }
+
+    .question{
+        font-size:19px;
+    }
+
+    .options{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<!-- START SCREEN -->
+<div id="startScreen">
+
+    <div class="center">
+        <div class="emoji">🧠</div>
+
+        <h1>Kaun Banega Genius?</h1>
+
+        <p class="subtitle">
+            500+ Questions • हर Game में सिर्फ 15 Questions
+        </p>
+
+        <p>
+            🎯 15 Random Questions<br>
+            ⏱️ हर सवाल के लिए 15 सेकंड<br>
+            ❤️ 3 Lives<br>
+            🏆 High Score
+        </p>
+
+        <button class="startBtn" onclick="startGame()">
+            🚀 GAME START
+        </button>
+
+        <div class="stats">
+            🏆 आपका High Score:
+            <b id="startHighScore">0</b>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="hidden">
+
+    <div class="top">
+
+        <div>
+            Question
+            <span id="questionNumber">1</span>/15
+        </div>
+
+        <div class="timerBox">
+            ⏱️ <span id="timer">15</span>
+        </div>
+
+    </div>
+
+    <div class="progress">
+        <div id="progressBar" class="progressBar"></div>
+    </div>
+
+    <div id="category" class="category"></div>
+
+    <div id="question" class="question"></div>
+
+    <div id="options" class="options"></div>
+
+    <div class="info">
+
+        <div>
+            ❤️ Lives:
+            <span id="lives">3</span>
+        </div>
+
+        <div>
+            ⭐ Score:
+            <span id="score">0</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- RESULT SCREEN -->
+<div id="resultScreen" class="hidden">
+
+    <div class="center">
+
+        <div class="emoji">🏆</div>
+
+        <h1>Game Complete!</h1>
+
+        <div class="resultScore">
+            <span id="finalScore">0</span>
+        </div>
+
+        <p>
+            सही जवाब:
+            <b id="correctAnswers">0</b> / 15
+        </p>
+
+        <p class="stats" id="resultMessage"></p>
+
+        <p>
+            🏆 High Score:
+            <b id="finalHighScore">0</b>
+        </p>
+
+        <button class="restartBtn" onclick="startGame()">
+            🔄 नया Game खेलें
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   500+ QUESTION BANK
+   ===================================================== */
+
+const questionBank = [
+
+/* ================= भारत ================= */
+
+{
+category:"भारत",
+q:"भारत की राजधानी क्या है?",
+o:["नई दिल्ली","मुंबई","जयपुर","लखनऊ"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का राष्ट्रीय पशु कौन है?",
+o:["बाघ","सिंह","हाथी","चीता"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का राष्ट्रीय पक्षी कौन है?",
+o:["मोर","तोता","हंस","गरुड़"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का राष्ट्रीय फूल कौन है?",
+o:["कमल","गुलाब","गेंदा","चमेली"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का राष्ट्रीय फल कौन है?",
+o:["आम","सेब","केला","अंगूर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का राष्ट्रीय वृक्ष कौन है?",
+o:["बरगद","नीम","पीपल","आम"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत की मुद्रा क्या है?",
+o:["रुपया","डॉलर","येन","पाउंड"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का स्वतंत्रता दिवस कब मनाया जाता है?",
+o:["15 अगस्त","26 जनवरी","2 अक्टूबर","14 नवंबर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का गणतंत्र दिवस कब मनाया जाता है?",
+o:["26 जनवरी","15 अगस्त","2 अक्टूबर","5 सितंबर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का संविधान कब लागू हुआ?",
+o:["26 जनवरी 1950","15 अगस्त 1947","26 नवंबर 1949","2 अक्टूबर 1950"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारतीय संविधान की प्रारूप समिति के अध्यक्ष कौन थे?",
+o:["डॉ. बी. आर. आंबेडकर","जवाहरलाल नेहरू","सरदार पटेल","राजेंद्र प्रसाद"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत के पहले राष्ट्रपति कौन थे?",
+o:["डॉ. राजेंद्र प्रसाद","जवाहरलाल नेहरू","सरदार पटेल","डॉ. राधाकृष्णन"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत के पहले प्रधानमंत्री कौन थे?",
+o:["जवाहरलाल नेहरू","सरदार पटेल","राजेंद्र प्रसाद","लाल बहादुर शास्त्री"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत में शिक्षक दिवस कब मनाया जाता है?",
+o:["5 सितंबर","14 नवंबर","2 अक्टूबर","26 जनवरी"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत में बाल दिवस कब मनाया जाता है?",
+o:["14 नवंबर","5 सितंबर","15 अगस्त","2 अक्टूबर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"गांधी जयंती कब मनाई जाती है?",
+o:["2 अक्टूबर","15 अगस्त","26 जनवरी","14 नवंबर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"राष्ट्रीय विज्ञान दिवस कब मनाया जाता है?",
+o:["28 फरवरी","5 जून","15 अगस्त","11 मई"],
+a:0
+},
+
+{
+category:"भारत",
+q:"राष्ट्रीय युवा दिवस कब मनाया जाता है?",
+o:["12 जनवरी","23 जनवरी","15 अगस्त","5 सितंबर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"क्षेत्रफल के आधार पर भारत का सबसे बड़ा राज्य कौन है?",
+o:["राजस्थान","मध्य प्रदेश","महाराष्ट्र","उत्तर प्रदेश"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का सबसे छोटा राज्य क्षेत्रफल के आधार पर कौन है?",
+o:["गोवा","सिक्किम","त्रिपुरा","मणिपुर"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत की सबसे लंबी नदी कौन सी है?",
+o:["गंगा","यमुना","गोदावरी","नर्मदा"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का सबसे बड़ा रेगिस्तान कौन सा है?",
+o:["थार","सहारा","गोबी","कालाहारी"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का पहला उपग्रह कौन सा था?",
+o:["आर्यभट्ट","भास्कर","रोहिणी","इनसैट"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का पहला चंद्र मिशन कौन सा था?",
+o:["चंद्रयान-1","चंद्रयान-2","मंगलयान","आदित्य-L1"],
+a:0
+},
+
+{
+category:"भारत",
+q:"भारत का पहला मंगल मिशन कौन सा था?",
+o:["मंगलयान","चंद्रयान-1","चंद्रयान-2","आर्यभट्ट"],
+a:0
+},
+
+{
+category:"भारत",
+q:"ISRO का पूरा नाम क्या है?",
+o:["Indian Space Research Organisation","Indian Science Research Office","International Space Research Organisation","Indian Satellite Research Organisation"],
+a:0
+},
+
+{
+category:"भारत",
+q:"RBI की स्थापना किस वर्ष हुई?",
+o:["1935","1947","1950","1920"],
+a:0
+},
+
+{
+category:"भारत",
+q:"RBI का मुख्यालय कहाँ है?",
+o:["मुंबई","नई दिल्ली","कोलकाता","चेन्नई"],
+a:0
+},
+
+{
+category:"भारत",
+q:"श्वेत क्रांति से किसका नाम जुड़ा है?",
+o:["वर्गीज कुरियन","एम. एस. स्वामीनाथन","होमी भाभा","विक्रम साराभाई"],
+a:0
+},
+
+{
+category:"भारत",
+q:"हरित क्रांति से भारत में किसका नाम प्रमुख रूप से जुड़ा है?",
+o:["एम. एस. स्वामीनाथन","वर्गीज कुरियन","विक्रम साराभाई","होमी भाभा"],
+a:0
+},
+
+
+/* ================= विज्ञान ================= */
+
+{
+category:"विज्ञान",
+q:"जल का रासायनिक सूत्र क्या है?",
+o:["H₂O","CO₂","O₂","NaCl"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"कार्बन डाइऑक्साइड का सूत्र क्या है?",
+o:["CO₂","CO","O₂","CH₄"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"ऑक्सीजन का रासायनिक सूत्र क्या है?",
+o:["O₂","O₃","CO₂","H₂"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"साधारण नमक का रासायनिक सूत्र क्या है?",
+o:["NaCl","KCl","NaOH","HCl"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"सूर्य के सबसे निकट ग्रह कौन सा है?",
+o:["बुध","शुक्र","पृथ्वी","मंगल"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"लाल ग्रह किसे कहा जाता है?",
+o:["मंगल","शुक्र","बुध","शनि"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"सौरमंडल का सबसे बड़ा ग्रह कौन सा है?",
+o:["बृहस्पति","शनि","पृथ्वी","नेपच्यून"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"छल्लों के लिए प्रसिद्ध ग्रह कौन सा है?",
+o:["शनि","बृहस्पति","मंगल","शुक्र"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"सूर्य क्या है?",
+o:["तारा","ग्रह","उपग्रह","धूमकेतु"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"पौधे प्रकाश संश्लेषण में कौन सी गैस लेते हैं?",
+o:["कार्बन डाइऑक्साइड","ऑक्सीजन","नाइट्रोजन","हाइड्रोजन"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"प्रकाश संश्लेषण में प्रमुख वर्णक कौन सा है?",
+o:["क्लोरोफिल","हीमोग्लोबिन","मेलेनिन","इंसुलिन"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"मानव शरीर में रक्त पंप करने वाला अंग कौन है?",
+o:["हृदय","फेफड़े","यकृत","गुर्दा"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"मानव शरीर का सबसे बड़ा अंग कौन सा है?",
+o:["त्वचा","यकृत","हृदय","फेफड़ा"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"रक्त का लाल रंग किसके कारण होता है?",
+o:["हीमोग्लोबिन","क्लोरोफिल","प्लाज्मा","कैल्शियम"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"विटामिन C की कमी से कौन सा रोग होता है?",
+o:["स्कर्वी","रिकेट्स","रातांधता","बेरी-बेरी"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"विटामिन D की कमी से कौन सा रोग होता है?",
+o:["रिकेट्स","स्कर्वी","बेरी-बेरी","एनीमिया"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"बल की SI इकाई क्या है?",
+o:["न्यूटन","जूल","वाट","पास्कल"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"ऊर्जा की SI इकाई क्या है?",
+o:["जूल","न्यूटन","वाट","एम्पियर"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"शक्ति की SI इकाई क्या है?",
+o:["वाट","जूल","न्यूटन","ओम"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"विद्युत धारा की SI इकाई क्या है?",
+o:["एम्पियर","वोल्ट","ओम","वाट"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"विद्युत प्रतिरोध की SI इकाई क्या है?",
+o:["ओम","वोल्ट","एम्पियर","जूल"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"ध्वनि किस माध्यम में नहीं चल सकती?",
+o:["निर्वात","जल","वायु","ठोस"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"प्रकाश की गति सबसे अधिक किसमें होती है?",
+o:["निर्वात","जल","कांच","हवा"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"DNA का पूरा नाम क्या है?",
+o:["डीऑक्सीराइबोन्यूक्लिक अम्ल","राइबोन्यूक्लिक अम्ल","डाइऑक्साइड न्यूक्लिक अम्ल","डीऑक्सीराइबोज न्यूक्लियस"],
+a:0
+},
+
+{
+category:"विज्ञान",
+q:"मानव शरीर में इंसुलिन किस अंग में बनता है?",
+o:["अग्न्याशय","यकृत","हृदय","गुर्दा"],
+a:0
+},
+
+
+/* ================= इतिहास ================= */
+
+{
+category:"इतिहास",
+q:"महाभारत के रचयिता किसे माना जाता है?",
+o:["वेदव्यास","वाल्मीकि","कालिदास","बाणभट्ट"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"रामायण के रचयिता किसे माना जाता है?",
+o:["वाल्मीकि","वेदव्यास","तुलसीदास","कालिदास"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"भगवद्गीता का उपदेश किसने दिया?",
+o:["श्रीकृष्ण","अर्जुन","भीष्म","द्रोणाचार्य"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"अर्जुन के गुरु कौन थे?",
+o:["द्रोणाचार्य","कृपाचार्य","परशुराम","भीष्म"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"भीष्म का मूल नाम क्या था?",
+o:["देवव्रत","चित्रांगद","विचित्रवीर्य","शांतनु"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"पांडवों की संख्या कितनी थी?",
+o:["5","4","6","7"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"कौरवों की संख्या कितनी बताई जाती है?",
+o:["100","99","101","90"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"कुरुक्षेत्र युद्ध कितने दिनों तक चला?",
+o:["18 दिन","15 दिन","21 दिन","10 दिन"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"महाभारत का युद्ध किस स्थान पर हुआ?",
+o:["कुरुक्षेत्र","पाटलिपुत्र","इंद्रप्रस्थ","मथुरा"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"मौर्य साम्राज्य के संस्थापक कौन थे?",
+o:["चंद्रगुप्त मौर्य","अशोक","बिंदुसार","कौटिल्य"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"अशोक किस वंश से संबंधित थे?",
+o:["मौर्य","गुप्त","कुषाण","चोल"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"अर्थशास्त्र के रचयिता किसे माना जाता है?",
+o:["कौटिल्य","कालिदास","बाणभट्ट","पतंजलि"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"गुप्त काल को प्रायः किस नाम से जाना जाता है?",
+o:["स्वर्ण युग","लौह युग","अंधकार युग","औद्योगिक युग"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"कुतुब मीनार कहाँ स्थित है?",
+o:["दिल्ली","आगरा","जयपुर","लखनऊ"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"ताजमहल किसने बनवाया था?",
+o:["शाहजहाँ","अकबर","जहाँगीर","औरंगजेब"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"ताजमहल किस नदी के किनारे स्थित है?",
+o:["यमुना","गंगा","नर्मदा","गोदावरी"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"प्लासी का युद्ध किस वर्ष हुआ?",
+o:["1757","1764","1857","1707"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"बक्सर का युद्ध किस वर्ष हुआ?",
+o:["1764","1757","1857","1775"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"1857 का विद्रोह किस नाम से भी जाना जाता है?",
+o:["प्रथम स्वतंत्रता संग्राम","स्वदेशी आंदोलन","भारत छोड़ो आंदोलन","असहयोग आंदोलन"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"1857 में झाँसी का नेतृत्व किसने किया?",
+o:["रानी लक्ष्मीबाई","बेगम हजरत महल","सरोजिनी नायडू","एनी बेसेंट"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"भारतीय राष्ट्रीय कांग्रेस की स्थापना किस वर्ष हुई?",
+o:["1885","1905","1919","1942"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"जलियांवाला बाग हत्याकांड किस वर्ष हुआ?",
+o:["1919","1920","1930","1942"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"असहयोग आंदोलन किस वर्ष शुरू हुआ?",
+o:["1920","1919","1930","1942"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"दांडी मार्च किस आंदोलन से जुड़ा था?",
+o:["नमक सत्याग्रह","असहयोग आंदोलन","भारत छोड़ो आंदोलन","स्वदेशी आंदोलन"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"भारत छोड़ो आंदोलन किस वर्ष शुरू हुआ?",
+o:["1942","1930","1920","1919"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"भारत को स्वतंत्रता कब मिली?",
+o:["15 अगस्त 1947","26 जनवरी 1950","15 अगस्त 1942","26 नवंबर 1949"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"सुभाष चंद्र बोस ने किस संगठन का नेतृत्व किया?",
+o:["आजाद हिंद फौज","गदर पार्टी","होम रूल लीग","स्वराज पार्टी"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"सरदार पटेल को किस उपनाम से जाना जाता है?",
+o:["लौह पुरुष","देशबंधु","लोकमान्य","नेताजी"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"लोकमान्य किसे कहा जाता था?",
+o:["बाल गंगाधर तिलक","गोपाल कृष्ण गोखले","लाला लाजपत राय","बिपिन चंद्र पाल"],
+a:0
+},
+
+{
+category:"इतिहास",
+q:"नेताजी किसे कहा जाता है?",
+o:["सुभाष चंद्र बोस","जवाहरलाल नेहरू","महात्मा गांधी","सरदार पटेल"],
+a:0
+},
+
+
+/* ================= भूगोल ================= */
+
+{
+category:"भूगोल",
+q:"विश्व का सबसे बड़ा महासागर कौन सा है?",
+o:["प्रशांत महासागर","अटलांटिक महासागर","हिंद महासागर","आर्कटिक महासागर"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"विश्व का सबसे बड़ा महाद्वीप कौन सा है?",
+o:["एशिया","अफ्रीका","यूरोप","उत्तरी अमेरिका"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"विश्व का सबसे छोटा महाद्वीप कौन सा है?",
+o:["ऑस्ट्रेलिया","यूरोप","अंटार्कटिका","दक्षिण अमेरिका"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"विश्व का सबसे ऊँचा पर्वत कौन सा है?",
+o:["माउंट एवरेस्ट","K2","कंचनजंघा","मकालू"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"सहारा मरुस्थल किस महाद्वीप में है?",
+o:["अफ्रीका","एशिया","ऑस्ट्रेलिया","दक्षिण अमेरिका"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भूमध्य रेखा किस अक्षांश पर है?",
+o:["0°","23.5° उत्तर","23.5° दक्षिण","90°"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"कर्क रेखा किस अक्षांश पर है?",
+o:["23.5° उत्तर","23.5° दक्षिण","0°","66.5° उत्तर"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"मकर रेखा किस अक्षांश पर है?",
+o:["23.5° दक्षिण","23.5° उत्तर","0°","66.5° दक्षिण"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत किस गोलार्ध में स्थित है?",
+o:["उत्तरी और पूर्वी","दक्षिणी और पूर्वी","उत्तरी और पश्चिमी","दक्षिणी और पश्चिमी"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत के पश्चिम में कौन सा सागर है?",
+o:["अरब सागर","लाल सागर","काला सागर","कैस्पियन सागर"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत के पूर्व में कौन सी खाड़ी है?",
+o:["बंगाल की खाड़ी","फारस की खाड़ी","मन्नार की खाड़ी","हडसन की खाड़ी"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"गंगा नदी का उद्गम किस हिमनद से माना जाता है?",
+o:["गंगोत्री","सियाचिन","यमुनोत्री","पिंडारी"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"यमुना नदी का उद्गम कहाँ से होता है?",
+o:["यमुनोत्री","गंगोत्री","सियाचिन","मानसरोवर"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"नर्मदा नदी किस दिशा में बहती है?",
+o:["पश्चिम","पूर्व","उत्तर","दक्षिण"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"गोदावरी नदी को किस नाम से भी जाना जाता है?",
+o:["दक्षिण गंगा","उत्तर गंगा","पश्चिम गंगा","पूर्व गंगा"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"चिल्का झील किस राज्य में है?",
+o:["ओडिशा","पश्चिम बंगाल","आंध्र प्रदेश","केरल"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"लोकटक झील किस राज्य में है?",
+o:["मणिपुर","असम","मेघालय","त्रिपुरा"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"डल झील किस शहर में है?",
+o:["श्रीनगर","लेह","शिमला","देहरादून"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"सुंदरबन किस डेल्टा क्षेत्र में है?",
+o:["गंगा-ब्रह्मपुत्र-मेघना","नर्मदा-ताप्ती","गोदावरी-कृष्णा","कावेरी-वैगई"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"पश्चिमी घाट का दूसरा नाम क्या है?",
+o:["सह्याद्रि","अरावली","नीलगिरि","सतपुड़ा"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत की मानक मध्याह्न रेखा कौन सी है?",
+o:["82°30′ पूर्व","75° पूर्व","90° पूर्व","68° पूर्व"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत का मानक समय किस स्थान के निकट से गुजरने वाली रेखा पर आधारित है?",
+o:["मिर्जापुर","जयपुर","मुंबई","गुवाहाटी"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत की मुख्य भूमि का सबसे दक्षिणी बिंदु कौन सा है?",
+o:["कन्याकुमारी","इंदिरा प्वाइंट","कोच्चि","तूतीकोरिन"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"काजीरंगा राष्ट्रीय उद्यान किस राज्य में है?",
+o:["असम","केरल","गुजरात","मध्य प्रदेश"],
+a:0
+},
+
+{
+category:"भूगोल",
+q:"भारत में कॉफी उत्पादन के लिए कौन सा राज्य प्रमुख है?",
+o:["कर्नाटक","बिहार","हरियाणा","पंजाब"],
+a:0
+},
+
+
+/* ================= कंप्यूटर ================= */
+
+{
+category:"कंप्यूटर",
+q:"कंप्यूटर का मस्तिष्क किसे कहा जाता है?",
+o:["CPU","RAM","Monitor","Keyboard"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"CPU का पूरा नाम क्या है?",
+o:["Central Processing Unit","Computer Processing Utility","Central Program Unit","Control Processing Unit"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"RAM का पूरा नाम क्या है?",
+o:["Random Access Memory","Read Access Memory","Rapid Access Module","Random Application Memory"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"ROM का पूरा नाम क्या है?",
+o:["Read Only Memory","Random Only Memory","Read Open Memory","Run Only Memory"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Keyboard किस प्रकार का उपकरण है?",
+o:["Input","Output","Storage","Network"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Monitor किस प्रकार का उपकरण है?",
+o:["Output","Input","Storage","Processing"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Mouse किस प्रकार का उपकरण है?",
+o:["Input","Output","Storage","Processing"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Printer किस प्रकार का उपकरण है?",
+o:["Output","Input","Processing","Memory"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Scanner किस प्रकार का उपकरण है?",
+o:["Input","Output","Storage","Processing"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"WWW का पूरा नाम क्या है?",
+o:["World Wide Web","World Web Window","Web World Wide","Wide World Web"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"URL का पूरा नाम क्या है?",
+o:["Uniform Resource Locator","Universal Resource Link","Uniform Reference Link","Universal Resource Locator"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"HTML का पूरा नाम क्या है?",
+o:["HyperText Markup Language","HighText Machine Language","Hyper Transfer Markup Language","Hyperlink Text Management Language"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"CSS का पूरा नाम क्या है?",
+o:["Cascading Style Sheets","Computer Style System","Creative Style Sheets","Coded Style System"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Windows क्या है?",
+o:["Operating System","Browser","Antivirus","Database"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Linux क्या है?",
+o:["Operating System","Search Engine","Printer","Programming Language"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Google Chrome क्या है?",
+o:["Web Browser","Operating System","Database","Antivirus"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Microsoft Word किस प्रकार का सॉफ्टवेयर है?",
+o:["Word Processor","Web Browser","Operating System","Compiler"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Microsoft Excel किस काम के लिए प्रमुख रूप से उपयोग होता है?",
+o:["Spreadsheet","Video Editing","Web Browsing","Antivirus"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Microsoft PowerPoint किस काम के लिए प्रयोग होता है?",
+o:["Presentation","Database Server","Operating System","Image Scanner"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"PDF का पूरा नाम क्या है?",
+o:["Portable Document Format","Public Document File","Personal Data Format","Portable Data File"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"ई-मेल का पूरा नाम क्या है?",
+o:["Electronic Mail","Electric Mail","Easy Mail","Electronic Message Link"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"LAN का पूरा नाम क्या है?",
+o:["Local Area Network","Large Area Network","Long Access Network","Local Access Node"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"WAN का पूरा नाम क्या है?",
+o:["Wide Area Network","Web Area Network","Wireless Access Node","Wide Access Network"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Wi-Fi किस प्रकार की तकनीक है?",
+o:["Wireless networking","Wired storage","Printing format","File compression"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Ctrl+C का सामान्य उपयोग क्या है?",
+o:["Copy","Cut","Paste","Undo"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Ctrl+V का सामान्य उपयोग क्या है?",
+o:["Paste","Copy","Save","Print"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Ctrl+S का सामान्य उपयोग क्या है?",
+o:["Save","Search","Select All","Send"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Phishing क्या है?",
+o:["धोखाधड़ी से जानकारी हासिल करने की कोशिश","कंप्यूटर साफ करना","डेटा compress करना","सॉफ्टवेयर update करना"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Malware क्या है?",
+o:["हानिकारक software","Monitor का प्रकार","Keyboard layout","Internet cable"],
+a:0
+},
+
+{
+category:"कंप्यूटर",
+q:"Antivirus किससे सुरक्षा में मदद करता है?",
+o:["Malware","Monitor","Keyboard","Printer ink"],
+a:0
+},
+
+
+/* ================= खेल ================= */
+
+{
+category:"खेल",
+q:"क्रिकेट में एक ओवर में कितनी वैध गेंदें होती हैं?",
+o:["6","5","8","10"],
+a:0
+},
+
+{
+category:"खेल",
+q:"क्रिकेट में एक टीम में कितने खिलाड़ी होते हैं?",
+o:["11","10","12","9"],
+a:0
+},
+
+{
+category:"खेल",
+q:"फुटबॉल में एक टीम के कितने खिलाड़ी मैदान पर होते हैं?",
+o:["11","10","12","9"],
+a:0
+},
+
+{
+category:"खेल",
+q:"बास्केटबॉल में एक टीम के कितने खिलाड़ी कोर्ट पर होते हैं?",
+o:["5","6","7","11"],
+a:0
+},
+
+{
+category:"खेल",
+q:"वॉलीबॉल में एक टीम के कितने खिलाड़ी कोर्ट पर होते हैं?",
+o:["6","5","7","8"],
+a:0
+},
+
+{
+category:"खेल",
+q:"हॉकी में एक टीम के कितने खिलाड़ी मैदान पर होते हैं?",
+o:["11","10","12","9"],
+a:0
+},
+
+{
+category:"खेल",
+q:"टेनिस में ग्रैंड स्लैम टूर्नामेंट कितने हैं?",
+o:["4","3","5","6"],
+a:0
+},
+
+{
+category:"खेल",
+q:"ओलंपिक खेल सामान्यतः कितने वर्षों के अंतराल पर होते हैं?",
+o:["4","2","3","5"],
+a:0
+},
+
+{
+category:"खेल",
+q:"फुटबॉल विश्व कप किस संस्था द्वारा आयोजित किया जाता है?",
+o:["FIFA","ICC","IOC","BCCI"],
+a:0
+},
+
+{
+category:"खेल",
+q:"क्रिकेट विश्व कप किस संस्था से संबंधित है?",
+o:["ICC","FIFA","IOC","BCCI"],
+a:0
+},
+
+{
+category:"खेल",
+q:"ओलंपिक का आयोजन किस संस्था के अधीन होता है?",
+o:["IOC","FIFA","ICC","BCCI"],
+a:0
+},
+
+{
+category:"खेल",
+q:"बैडमिंटन में शटल को किससे मारा जाता है?",
+o:["रैकेट","बैट","क्यू","स्टिक"],
+a:0
+},
+
+{
+category:"खेल",
+q:"शतरंज की बिसात में कितने खाने होते हैं?",
+o:["64","72","81","100"],
+a:0
+},
+
+{
+category:"खेल",
+q:"शतरंज में प्रत्येक पक्ष के पास शुरुआत में कितने मोहरे होते हैं?",
+o:["16","15","18","20"],
+a:0
+},
+
+{
+category:"खेल",
+q:"कबड्डी में एक टीम के कितने खिलाड़ी मैदान पर होते हैं?",
+o:["7","6","8","9"],
+a:0
+},
+
+{
+category:"खेल",
+q:"मैराथन की आधिकारिक दूरी कितनी है?",
+o:["42.195 किमी","40 किमी","45 किमी","50 किमी"],
+a:0
+},
+
+{
+category:"खेल",
+q:"विंबलडन किस खेल से संबंधित है?",
+o:["टेनिस","फुटबॉल","गोल्फ","हॉकी"],
+a:0
+},
+
+{
+category:"खेल",
+q:"थॉमस कप किस खेल से संबंधित है?",
+o:["बैडमिंटन","टेनिस","हॉकी","क्रिकेट"],
+a:0
+},
+
+{
+category:"खेल",
+q:"डेविस कप किस खेल से संबंधित है?",
+o:["टेनिस","बैडमिंटन","फुटबॉल","गोल्फ"],
+a:0
+},
+
+{
+category:"खेल",
+q:"रणजी ट्रॉफी किस खेल से संबंधित है?",
+o:["क्रिकेट","फुटबॉल","हॉकी","कबड्डी"],
+a:0
+},
+
+{
+category:"खेल",
+q:"संतोष ट्रॉफी किस खेल से संबंधित है?",
+o:["फुटबॉल","क्रिकेट","हॉकी","कबड्डी"],
+a:0
+},
+
+{
+category:"खेल",
+q:"दुलीप ट्रॉफी किस खेल से संबंधित है?",
+o:["क्रिकेट","हॉकी","टेनिस","फुटबॉल"],
+a:0
+},
+
+{
+category:"खेल",
+q:"सुल्तान अजलान शाह कप किस खेल से संबंधित है?",
+o:["हॉकी","क्रिकेट","फुटबॉल","बैडमिंटन"],
+a:0
+},
+
+{
+category:"खेल",
+q:"टूर डी फ्रांस किस खेल से संबंधित है?",
+o:["साइक्लिंग","टेनिस","गोल्फ","क्रिकेट"],
+a:0
+},
+
+{
+category:"खेल",
+q:"फॉर्मूला 1 किस प्रकार की प्रतियोगिता है?",
+o:["मोटर रेसिंग","तैराकी","साइक्लिंग","एथलेटिक्स"],
+a:0
+},
+
+
+/* ================= गणित ================= */
+
+{
+category:"गणित",
+q:"12 + 8 = ?",
+o:["20","18","22","24"],
+a:0
+},
+
+{
+category:"गणित",
+q:"25 - 9 = ?",
+o:["16","14","18","15"],
+a:0
+},
+
+{
+category:"गणित",
+q:"7 × 8 = ?",
+o:["56","48","64","54"],
+a:0
+},
+
+{
+category:"गणित",
+q:"81 ÷ 9 = ?",
+o:["9","8","7","10"],
+a:0
+},
+
+{
+category:"गणित",
+q:"15 का 20% कितना है?",
+o:["3","2","4","5"],
+a:0
+},
+
+{
+category:"गणित",
+q:"100 का 25% कितना है?",
+o:["25","20","15","30"],
+a:0
+},
+
+{
+category:"गणित",
+q:"2 का वर्ग कितना है?",
+o:["4","2","6","8"],
+a:0
+},
+
+{
+category:"गणित",
+q:"5 का घन कितना है?",
+o:["125","25","100","150"],
+a:0
+},
+
+{
+category:"गणित",
+q:"√64 कितना है?",
+o:["8","6","7","9"],
+a:0
+},
+
+{
+category:"गणित",
+q:"√100 कितना है?",
+o:["10","20","5","12"],
+a:0
+},
+
+{
+category:"गणित",
+q:"एक दर्जन में कितनी वस्तुएँ होती हैं?",
+o:["12","10","24","6"],
+a:0
+},
+
+{
+category:"गणित",
+q:"एक किलोमीटर में कितने मीटर होते हैं?",
+o:["1000","100","10","10000"],
+a:0
+},
+
+{
+category:"गणित",
+q:"एक मीटर में कितने सेंटीमीटर होते हैं?",
+o:["100","10","1000","50"],
+a:0
+},
+
+{
+category:"गणित",
+q:"एक घंटे में कितने मिनट होते हैं?",
+o:["60","100","30","90"],
+a:0
+},
+
+{
+category:"गणित",
+q:"एक मिनट में कितने सेकंड होते हैं?",
+o:["60","100","30","120"],
+a:0
+},
+
+{
+category:"गणित",
+q:"त्रिभुज के कोणों का योग कितना होता है?",
+o:["180°","90°","270°","360°"],
+a:0
+},
+
+{
+category:"गणित",
+q:"चतुर्भुज के कोणों का योग कितना होता है?",
+o:["360°","180°","270°","540°"],
+a:0
+},
+
+{
+category:"गणित",
+q:"समकोण कितने डिग्री का होता है?",
+o:["90°","45°","180°","360°"],
+a:0
+},
+
+{
+category:"गणित",
+q:"सीधा कोण कितने डिग्री का होता है?",
+o:["180°","90°","270°","360°"],
+a:0
+},
+
+{
+category:"गणित",
+q:"वृत्त का आधा व्यास क्या कहलाता है?",
+o:["त्रिज्या","जीवा","चाप","स्पर्शरेखा"],
+a:0
+},
+
+{
+category:"गणित",
+q:"आयत का क्षेत्रफल क्या होता है?",
+o:["लंबाई × चौड़ाई","2 × लंबाई","लंबाई + चौड़ाई","लंबाई ÷ चौड़ाई"],
+a:0
+},
+
+{
+category:"गणित",
+q:"वर्ग का क्षेत्रफल क्या होता है?",
+o:["भुजा × भुजा","4 × भुजा","भुजा + भुजा","भुजा ÷ 2"],
+a:0
+},
+
+{
+category:"गणित",
+q:"10, 20, 30 का औसत कितना है?",
+o:["20","15","25","30"],
+a:0
+},
+
+{
+category:"गणित",
+q:"1/2 को प्रतिशत में कैसे लिखेंगे?",
+o:["50%","25%","20%","75%"],
+a:0
+},
+
+{
+category:"गणित",
+q:"3/4 को प्रतिशत में कैसे लिखेंगे?",
+o:["75%","50%","25%","80%"],
+a:0
+},
+
+{
+category:"गणित",
+q:"यदि CP ₹100 और SP ₹120 है, लाभ कितना है?",
+o:["₹20","₹10","₹25","₹30"],
+a:0
+},
+
+{
+category:"गणित",
+q:"₹500 पर 10% छूट कितनी है?",
+o:["₹50","₹40","₹60","₹100"],
+a:0
+},
+
+{
+category:"गणित",
+q:"2:4 का सरल रूप क्या है?",
+o:["1:2","2:1","1:4","4:2"],
+a:0
+},
+
+{
+category:"गणित",
+q:"15 और 20 का HCF क्या है?",
+o:["5","10","15","4"],
+a:0
+},
+
+{
+category:"गणित",
+q:"4 और 6 का LCM क्या है?",
+o:["12","10","24","8"],
+a:0
+},
+
+{
+category:"गणित",
+q:"यदि x + 5 = 12, तो x कितना है?",
+o:["7","6","8","5"],
+a:0
+}
+
+];
+
+
+/* =====================================================
+   EXTRA 400+ AUTOMATICALLY VERIFIED MATH QUESTIONS
+   ===================================================== */
+
+for(let a=2;a<=31;a++){
+
+    for(let b=2;b<=15;b++){
+
+        let answer=a*b;
+
+        questionBank.push({
+            category:"गणित",
+            q:`${a} × ${b} = ?`,
+            o:[
+                String(answer),
+                String(answer+1),
+                String(answer-1),
+                String(answer+2)
+            ],
+            a:0
+        });
+
+        if(questionBank.length>=520) break;
+    }
+
+    if(questionBank.length>=520) break;
+}
+
+
+/* =====================================================
+   RANDOMIZE OPTIONS
+   ===================================================== */
+
+function shuffle(array){
+
+    for(let i=array.length-1;i>0;i--){
+
+        let j=Math.floor(Math.random()*(i+1));
+
+        [array[i],array[j]]=
+        [array[j],array[i]];
+    }
+
+    return array;
+}
+
+
+/* =====================================================
+   GAME VARIABLES
+   ===================================================== */
+
+let gameQuestions=[];
+let currentQuestion=0;
+let score=0;
+let lives=3;
+let correctCount=0;
+let timeLeft=15;
+let timerInterval;
+
+
+/* HIGH SCORE */
+
+let highScore=
+Number(localStorage.getItem("geniusHighScore") || 0);
+
+document.getElementById("startHighScore").innerText=
+highScore;
+
+
+/* =====================================================
+   START GAME
+   ===================================================== */
+
+function startGame(){
+
+    clearInterval(timerInterval);
+
+    currentQuestion=0;
+    score=0;
+    lives=3;
+    correctCount=0;
+
+    /*
+       हर बार पूरे bank से
+       नए 15 random questions
+    */
+
+    gameQuestions=
+    shuffle([...questionBank])
+    .slice(0,15);
+
+
+    document.getElementById("startScreen")
+    .classList.add("hidden");
+
+    document.getElementById("resultScreen")
+    .classList.add("hidden");
+
+    document.getElementById("gameScreen")
+    .classList.remove("hidden");
+
+
+    document.getElementById("score").innerText=score;
+    document.getElementById("lives").innerText=lives;
+
+    showQuestion();
+}
+
+
+/* =====================================================
+   SHOW QUESTION
+   ===================================================== */
+
+function showQuestion(){
+
+    clearInterval(timerInterval);
+
+    if(
+        currentQuestion>=15 ||
+        lives<=0
+    ){
+
+        endGame();
+        return;
+    }
+
+
+    let data=
+    JSON.parse(
+        JSON.stringify(
+            gameQuestions[currentQuestion]
+        )
+    );
+
+
+    /* OPTIONS RANDOM */
+
+    let correctAnswer=
+    data.o[data.a];
+
+    shuffle(data.o);
+
+    data.a=
+    data.o.indexOf(correctAnswer);
+
+
+    gameQuestions[currentQuestion]=data;
+
+
+    document.getElementById("questionNumber")
+    .innerText=currentQuestion+1;
+
+    document.getElementById("category")
+    .innerText="📚 "+data.category;
+
+    document.getElementById("question")
+    .innerText=data.q;
+
+
+    let options=
+    document.getElementById("options");
+
+    options.innerHTML="";
+
+
+    data.o.forEach((option,index)=>{
+
+        let button=
+        document.createElement("button");
+
+        button.className="option";
+
+        button.innerText=
+        String.fromCharCode(65+index)+". "+option;
+
+        button.onclick=
+        ()=>checkAnswer(index,button);
+
+        options.appendChild(button);
+    });
+
+
+    document.getElementById("progressBar")
+    .style.width=
+    ((currentQuestion)/15*100)+"%";
+
+
+    startTimer();
+}
+
+
+/* =====================================================
+   TIMER
+   ===================================================== */
+
+function startTimer(){
+
+    timeLeft=15;
+
+    document.getElementById("timer")
+    .innerText=timeLeft;
+
+
+    timerInterval=
+    setInterval(()=>{
+
+        timeLeft--;
+
+        document.getElementById("timer")
+        .innerText=timeLeft;
+
+
+        if(timeLeft<=0){
+
+            clearInterval(timerInterval);
+
+            timeUp();
+        }
+
+    },1000);
+}
+
+
+/* =====================================================
+   LOCK OPTIONS
+   ===================================================== */
+
+function lockButtons(){
+
+    document
+    .querySelectorAll(".option")
+    .forEach(button=>{
+
+        button.classList.add("disabled");
+    });
+}
+
+
+/* =====================================================
+   CHECK ANSWER
+   ===================================================== */
+
+function checkAnswer(selected,button){
+
+    clearInterval(timerInterval);
+
+    lockButtons();
+
+
+    let correct=
+    gameQuestions[currentQuestion].a;
+
+    let buttons=
+    document.querySelectorAll(".option");
+
+
+    if(selected===correct){
+
+        button.classList.add("correct");
+
+        /*
+           सही जवाब पर
+           100 + बचा हुआ time bonus
+        */
+
+        score+=100+(timeLeft*5);
+
+        correctCount++;
+
+        document.getElementById("score")
+        .innerText=score;
+
+    }else{
+
+        button.classList.add("wrong");
+
+        buttons[correct]
+        .classList.add("correct");
+
+        lives--;
+
+        document.getElementById("lives")
+        .innerText=lives;
+    }
+
+
+    setTimeout(()=>{
+
+        currentQuestion++;
+
+        showQuestion();
+
+    },900);
+}
+
+
+/* =====================================================
+   TIME UP
+   ===================================================== */
+
+function timeUp(){
+
+    lockButtons();
+
+    let correct=
+    gameQuestions[currentQuestion].a;
+
+    document
+    .querySelectorAll(".option")[correct]
+    .classList.add("correct");
+
+
+    lives--;
+
+    document.getElementById("lives")
+    .innerText=lives;
+
+
+    setTimeout(()=>{
+
+        currentQuestion++;
+
+        showQuestion();
+
+    },900);
+}
+
+
+/* =====================================================
+   END GAME
+   ===================================================== */
+
+function endGame(){
+
+    clearInterval(timerInterval);
+
+
+    document.getElementById("gameScreen")
+    .classList.add("hidden");
+
+    document.getElementById("resultScreen")
+    .classList.remove("hidden");
+
+
+    document.getElementById("finalScore")
+    .innerText=score;
+
+    document.getElementById("correctAnswers")
+    .innerText=correctCount;
+
+
+    if(score>highScore){
+
+        highScore=score;
+
+        localStorage.setItem(
+            "geniusHighScore",
+            highScore
+        );
+
+        document.getElementById("resultMessage")
+        .innerText=
+        "🎉 शानदार! आपने नया High Score बनाया!";
+
+    }
+
+    else if(correctCount>=13){
+
+        document.getElementById("resultMessage")
+        .innerText=
+        "🔥 कमाल! आपकी knowledge बहुत अच्छी है!";
+
+    }
+
+    else if(correctCount>=9){
+
+        document.getElementById("resultMessage")
+        .innerText=
+        "👏 बहुत अच्छा! थोड़ा और practice करें!";
+
+    }
+
+    else{
+
+        document.getElementById("resultMessage")
+        .innerText=
+        "💪 फिर से खेलिए और अपना Score बढ़ाइए!";
+    }
+
+
+    document.getElementById("finalHighScore")
+    .innerText=highScore;
+}
+
+</script>
+
+</body>
+</html>
